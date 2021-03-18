@@ -15,7 +15,12 @@ def Handle_Users(client, address):
 
     while True:
         msg = client.recv(1024)
-        print(msg.decode())
+
+        if len(msg) > 0:    
+            print(msg.decode())
+        else:
+            client.close()
+            break
 
 
 if __name__ == "__main__":
