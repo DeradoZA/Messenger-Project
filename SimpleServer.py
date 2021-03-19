@@ -22,10 +22,6 @@ def start():
             ServerMessage = "[SERVER] New user connected --> " + cUsername
             x.send(ServerMessage.encode())
 
-## Introduce Username or ID system
-## Setup a PM system
-        
-
 def Handle_Users(client, address, chat_username):
     print("Connected to {}".format(address))
     print("Total amount of users connected: {}".format(threading.active_count() - 1))
@@ -53,10 +49,10 @@ if __name__ == "__main__":
 
     HEADER = 10
     PORT = 5050
-    SERVERIP = socket.gethostbyname(socket.gethostname())
+    SERVERIP = '192.168.1.7'
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(('192.168.1.7', PORT))
+    s.bind((SERVERIP, PORT))
     s.listen()
     start()
 
