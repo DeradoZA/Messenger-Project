@@ -2,27 +2,31 @@ import socket, threading
 
 AddressList = []
 ClientList = []
+UsernameList = []
 
 def start():
     print("SERVER HAS STARTED")
-    global AddressList, ClientList
+    global AddressList, ClientList, UsernameList
+
     while True:
         client, address = s.accept()
+        cUsername = client.recv(1024).decode()
 
-        thread = threading.Thread(target = Handle_Users, args = (client, address))
+        thread = threading.Thread(target = Handle_Users, args = (client, address, cUsername))
         thread.start()
         AddressList.append(address)
         ClientList.append(client)
+        UsernameList.append(cUsername)
 
         for x in ClientList:
-            ServerMessage = "[SERVER] New user connected --> " + address[0]
+            ServerMessage = "[SERVER] New user connected --> " + cUsername
             x.send(ServerMessage.encode())
 
 ## Introduce Username or ID system
 ## Setup a PM system
         
 
-def Handle_Users(client, address):
+def Handle_Users(client, address, chat_username):
     print("Connected to {}".format(address))
     print("Total amount of users connected: {}".format(threading.active_count() - 1))
     msg = ""
@@ -31,7 +35,7 @@ def Handle_Users(client, address):
         msg = client.recv(1024)
 
         if len(msg) > 0:   
-            msg = address[0] + ": " + msg.decode() 
+            msg = chat_username + ": " + msg.decode() 
             print(msg)
 
             for x in ClientList:
@@ -52,7 +56,7 @@ if __name__ == "__main__":
     SERVERIP = socket.gethostbyname(socket.gethostname())
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((SERVERIP, PORT))
+    s.bind(('192.168.1.7', PORT))
     s.listen()
     start()
 
