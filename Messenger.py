@@ -12,6 +12,7 @@ def MessageSender():
 
         if message == "!disconnect":
             print("Thanks for connecting!")
+            s.send(message.encode())
             s.close()
             break
         else:

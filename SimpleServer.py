@@ -8,6 +8,9 @@ def start():
     print("SERVER HAS STARTED")
     global AddressList, ClientList, UsernameList
 
+    ServerCommandThread = threading.Thread(target = Server_Commands)
+    ServerCommandThread.start()
+
     while True:
         client, address = s.accept()
         cUsername = client.recv(1024).decode()
@@ -24,14 +27,16 @@ def start():
 
 def Handle_Users(client, address, chat_username):
     print("Connected to {}".format(address))
-    print("Total amount of users connected: {}".format(threading.active_count() - 1))
+    print("Total amount of users connected: {}".format(threading.active_count() - 2))
     msg = ""
+    DisconnectMessage = "!disconnect"
 
     while True:
         msg = client.recv(1024)
+        msg = msg.decode()
 
-        if len(msg) > 0:   
-            msg = chat_username + ": " + msg.decode() 
+        if msg != DisconnectMessage:   
+            msg = chat_username + ": " + msg 
             print(msg)
 
             for x in ClientList:
@@ -41,8 +46,29 @@ def Handle_Users(client, address, chat_username):
                     x.send(msg.encode())
                     
         else:
+
+            ClientList.remove(client)
+            AddressList.remove(address)
+            UsernameList.remove(chat_username)
             client.close()
             break
+
+
+def Server_Commands():
+    ServerSwitch = True
+
+    while ServerSwitch:
+        Server_Request = input()
+        if Server_Request == "/userlist":
+            print("[{}]USERNAME LIST:".format(threading.active_count() - 2))
+            for x in UsernameList:
+                print(x)
+        elif Server_Request == "/addrlist":
+            print("CONNECION ADDRESS LIST:")
+            for x in AddressList:
+                print(x)
+
+
 
 
 if __name__ == "__main__":
